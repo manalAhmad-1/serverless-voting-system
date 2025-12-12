@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Serverless Voting System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f7f9fc;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    label {
+      display: block;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+    input[type="text"], textarea, input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .small {
+      font-size: 0.9em;
+      color: #555;
+    }
+    .radio-option {
+      margin-top: 4px;
+    }
+    .result-row {
+      margin: 4px 0;
+    }
+    .message {
+      margin-top: 8px;
+      font-size: 0.9em;
+    }
+    .success {
+      color: #2ecc71;
+    }
+    .error {
+      color: #e74c3c;
+    }
+    .info {
+      color: #34495e;
+    }
+  </style>
+</head>
+<body>
+  <h1>Serverless Voting System</h1>
+
+  <!-- ========== CREATE POLL ========== -->
+  <div class="card">
+    <h2>Create a New Poll</h2>
+    <label>Poll title</label>
+    <input type="text" id="create-title" placeholder="e.g. Best Drink" />
+
+    <label>Options (comma-separated)</label>
+    <input type="text" id="create-options" placeholder="Tea, Coffee, Juice" />
+
+    <label>
+      <input type="checkbox" id="create-allow-comments" checked />
+      Allow comments
+    </label>
+
+    <button onclick="createPoll()">Create Poll</button>
+
+    <div id="create-message" class="message"></div>
+  </div>
+
+  <!-- ========== LOAD POLL & VOTE ========== -->
+  <div class="card">
+    <h2>Load Poll & Vote</h2>
+
+    <label>Poll ID</label>
+    <input type="number" id="vote-poll-id" placeholder="e.g. 2" />
+
+    <button onclick="loadPoll()">Load Poll</button>
+
+    <div id="vote-poll-details" class="message info"></div>
+
+    <div id="vote-options"></div>
+
+    <label>Optional comment</label>
+    <textarea id="vote-comment" rows="2" placeholder="Your comment (optional)"></textarea>
+
+    <button onclick="submitVote()">Submit Vote</button>
+
+    <div id="vote-message" class="message"></div>
+  </div>
+
+  <!-- ========== VIEW RESULTS ========== -->
+  <div class="card">
+    <h2>View Results</h2>
+
+    <label>Poll ID</label>
+    <input type="number" id="results-poll-id" placeholder="e.g. 2" />
+
+    <button onclick="loadResults()">Load Results</button>
+
+    <div id="results-output" class="message info"></div>
+  </div>
+
+  <script>
+    const BASE_URL = "https://ijgb7xugw2.execute-api.us-east-1.amazonaws.com/prod";
+
+    // ========== CREATE POLL ==========
+    async function createPoll() {
+      const titleEl = document.getElementById("create-title");
+      const optionsEl = document.getElementById("create-options");
+      const allowCommentsEl = document.getElementById("create-allow-comments");
+      const msgEl = document.getElementById("create-message");
+
+      msgEl.textContent = "";
+      msgEl.className = "message";
+
+      const title = titleEl.value.trim();
+      const optionsRaw = optionsEl.value.trim();
+      const allowComments = allowCommentsEl.checked;
+
+      if (!title || !optionsRaw) {
+        msgEl.textContent = "Please provide a title and at least one option.";
+        msgEl.classList.add("error");
+        return;
+      }
+
+      const options = optionsRaw.split(",").map(o => o.trim()).filter(o => o.length > 0);
+
+      if (options.length < 2) {
+        msgEl.textContent = "Please provide at least two options.";
+        msgEl.classList.add("error");
+        return;
+      }
+
+      try {
+        const res = await fetch(BASE_URL + "/polls", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            options,
+            allowComments
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          msgEl.textContent = "Error: " + JSON.stringify(data);
+          msgEl.classList.add("error");
+          return;
+        }
+
+        msgEl.textContent = `Poll created successfully with ID: ${data.pollId}`;
+        msgEl.classList.add("success");
+
+        // Pre-fill poll id fields for convenience
+        document.getElementById("vote-poll-id").value = data.pollId;
+        document.getElementById("results-poll-id").value = data.pollId;
+
+      } catch (err) {
+        msgEl.textContent = "Network error: " + err;
+        msgEl.classList.add("error");
+      }
+    }
+
+    // ========== LOAD POLL ==========
+    async function loadPoll() {
+      const pollIdEl = document.getElementById("vote-poll-id");
+      const detailsEl = document.getElementById("vote-poll-details");
+      const optionsContainer = document.getElementById("vote-options");
+      const msgEl = document.getElementById("vote-message");
+
+      detailsEl.textContent = "";
+      optionsContainer.innerHTML = "";
+      msgEl.textContent = "";
+      msgEl.className = "message";
+
+      const pollId = pollIdEl.value.trim();
+
+      if (!pollId) {
+        detailsEl.textContent = "Please enter a poll ID.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/polls/${pollId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          detailsEl.textContent = "Error: " + JSON.stringify(data);
+          return;
+        }
+
+        detailsEl.textContent = `Poll #${data.pollId}: ${data.title}`;
+
+        // Render radio options
+        optionsContainer.innerHTML = "";
+        data.options.forEach(opt => {
+          const div = document.createElement("div");
+          div.className = "radio-option";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "vote-option";
+          input.value = opt.option_id || opt.optionId; // support both naming styles
+
+          const label = document.createElement("label");
+          label.textContent = " " + (opt.label || opt.option_text);
+          label.prepend(input);
+
+          div.appendChild(label);
+          optionsContainer.appendChild(div);
+        });
+
+      } catch (err) {
+        detailsEl.textContent = "Network error: " + err;
+      }
+    }
+
+    // ========== SUBMIT VOTE ==========
+    async function submitVote() {
+      const pollIdEl = document.getElementById("vote-poll-id");
+      const commentEl = document.getElementById("vote-comment");
+      const msgEl = document.getElementById("vote-message");
+
+      msgEl.textContent = "";
+      msgEl.className = "message";
+
+      const pollId = pollIdEl.value.trim();
+      if (!pollId) {
+        msgEl.textContent = "Please enter a poll ID.";
+        msgEl.classList.add("error");
+        return;
+      }
+
+      const selected = document.querySelector('input[name="vote-option"]:checked');
+      if (!selected) {
+        msgEl.textContent = "Please select an option.";
+        msgEl.classList.add("error");
+        return;
+      }
+
+      const optionId = parseInt(selected.value, 10);
+      const comment = commentEl.value.trim() || null;
+
+      try {
+        const res = await fetch(`${BASE_URL}/polls/${pollId}/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pollId: parseInt(pollId, 10),
+            optionId,
+            comment
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          msgEl.textContent = "Error: " + JSON.stringify(data);
+          msgEl.classList.add("error");
+          return;
+        }
+
+        msgEl.textContent = "Vote submitted successfully!";
+        msgEl.classList.add("success");
+
+      } catch (err) {
+        msgEl.textContent = "Network error: " + err;
+        msgEl.classList.add("error");
+      }
+    }
+
+    // ========== LOAD RESULTS ==========
+    async function loadResults() {
+      const pollIdEl = document.getElementById("results-poll-id");
+      const outEl = document.getElementById("results-output");
+
+      outEl.textContent = "";
+      const pollId = pollIdEl.value.trim();
+
+      if (!pollId) {
+        outEl.textContent = "Please enter a poll ID.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/polls/${pollId}/results`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          outEl.textContent = "Error: " + JSON.stringify(data);
+          return;
+        }
+
+        let html = "";
+        html += `Poll #${data.pollId}: ${data.title}<br/>`;
+        html += `Total votes: ${data.totalVotes}<br/><br/>`;
+
+        data.results.forEach(r => {
+          html += `<div class="result-row">${r.label}: ${r.votes} vote(s) (${r.percentage}%)</div>`;
+        });
+
+        outEl.innerHTML = html;
+
+      } catch (err) {
+        outEl.textContent = "Network error: " + err;
+      }
+    }
+  </script>
+</body>
+</html>
