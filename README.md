@@ -3,9 +3,13 @@
 **Course Information:**
 
 **Course:** Cloud Computing
+--
 **Instructor:** Dr. Ahmed Nasrallah
+--
 **Department:** Computer Engineering
+--
 **University:** Kuwait University – College of Engineering & Petroleum
+--
 
 **Team Members:**
 
@@ -111,4 +115,5 @@ All course requirements have been met, and an additional SNS notification featur
 - No servers are required
 
 - Architecture is highly scalable and efficient
+
 
