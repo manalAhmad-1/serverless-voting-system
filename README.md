@@ -26,7 +26,7 @@ Features:
 -Optional comments during voting
 -Real-time results display
 -Email notification sent automatically when a new poll is created (SNS Bonus Feature)
--Simple frontend built using HTML and JavaScript
+-Simple frontend built using HTML and python
 
 AWS Services Used:
 
@@ -60,7 +60,7 @@ IAM and CloudWatch:
 
 System Architecture:
 
--The user interacts with the HTML/JavaScript frontend
+-The user interacts with the HTML/python frontend
 -The frontend communicates with API Gateway
 -API Gateway triggers Lambda functions
 -Lambda functions read and write data to Amazon RDS (MySQL)-When a poll is created, Lambda publishes a message to Amazon SNS
@@ -109,4 +109,5 @@ Notes:
 
 -The project uses only AWS managed services
 -No servers are required
+
 -Architecture is highly scalable and efficient
