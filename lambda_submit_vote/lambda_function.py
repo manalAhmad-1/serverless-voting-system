@@ -6,7 +6,7 @@ def lambda_handler(event, context):
     Submit a vote for a poll option.
     Expected event format (from API Gateway):
     {
-      "body": "{\"pollId\": 1, \"optionId\": 2, \"comment\": \"Nice option\"}"
+      "body": "{\"pollId\": 1, \"optionId\": 2}"
     }
     """
 
@@ -15,7 +15,6 @@ def lambda_handler(event, context):
 
     poll_id = body.get("pollId")
     option_id = body.get("optionId")
-    comment = body.get("comment")
 
     # Basic validation
     if not poll_id or not option_id:
@@ -56,8 +55,8 @@ def lambda_handler(event, context):
 
             # Insert the vote
             cur.execute(
-                "INSERT INTO votes (poll_id, option_id, comment) VALUES (%s, %s, %s)",
-                (poll_id, option_id, comment)
+                "INSERT INTO votes (poll_id, option_id) VALUES (%s, %s)",
+                (poll_id, option_id)
             )
 
         conn.commit()
@@ -69,7 +68,6 @@ def lambda_handler(event, context):
                 "message": "Vote submitted",
                 "pollId": poll_id,
                 "optionId": option_id,
-                "comment": comment
             })
         }
 
@@ -81,3 +79,4 @@ def lambda_handler(event, context):
         }
     finally:
         conn.close()
+
