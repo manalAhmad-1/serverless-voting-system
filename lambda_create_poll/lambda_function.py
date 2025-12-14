@@ -6,7 +6,6 @@ def lambda_handler(event, context):
 
     title = body.get("title")
     options = body.get("options", [])
-    allow_comments = body.get("allowComments", True)
 
     if not title or len(options) < 2:
         return {
@@ -19,8 +18,8 @@ def lambda_handler(event, context):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO polls (title, allow_comments) VALUES (%s, %s)",
-                (title, allow_comments)
+                "INSERT INTO polls (title) VALUES (%s)",
+                (title)
             )
             poll_id = cur.lastrowid
 
@@ -38,9 +37,9 @@ def lambda_handler(event, context):
             "body": json.dumps({
                 "pollId": poll_id,
                 "title": title,
-                "options": options,
-                "allowComments": allow_comments
+                "options": options
             })
         }
     finally:
         conn.close()
+
