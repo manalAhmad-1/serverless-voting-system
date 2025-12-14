@@ -27,7 +27,6 @@ The system is fully serverless and uses AWS managed services to ensure scalabili
 - Create a new poll with a title and multiple options
 - Automatically generated Poll ID for voting and results
 - Submit votes for any poll
-- Optional comments during voting
 - Real-time results display
 - Email notification sent automatically when a new poll is created (SNS Bonus Feature)
 - Simple frontend built using HTML and JavaScript
@@ -67,7 +66,8 @@ Handles all backend logic for:
 - The user interacts with the HTML/JavaScript frontend
 - The frontend communicates with API Gateway
 - API Gateway triggers Lambda functions
-- Lambda functions read and write data to Amazon RDS (MySQL)-When a poll is created, Lambda publishes a message to Amazon SNS
+- Lambda functions read and write data to Amazon RDS (MySQL)
+- -When a poll is created, Lambda publishes a message to Amazon SNS
 - SNS sends an automatic email notification to the subscribed email
 - Results are returned to the frontend for display
 
@@ -80,7 +80,7 @@ Handles all backend logic for:
 - Returns poll title and options
 
 **POST /polls/{id}/vote:**
-- Submits a vote with an optional comment
+- Submits a vote 
 
 **GET /polls/{id}/results:**
 - Returns total votes and percentages
@@ -115,6 +115,7 @@ All course requirements have been met, and an additional SNS notification featur
 - No servers are required
 
 - Architecture is highly scalable and efficient
+
 
 
 
