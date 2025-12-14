@@ -82,11 +82,7 @@
     <label>Options (comma-separated)</label>
     <input type="text" id="create-options" placeholder="Tea, Coffee, Juice" />
 
-    <label>
-      <input type="checkbox" id="create-allow-comments" checked />
-      Allow comments
-    </label>
-
+    
     <button onclick="createPoll()">Create Poll</button>
 
     <div id="create-message" class="message"></div>
@@ -105,8 +101,7 @@
 
     <div id="vote-options"></div>
 
-    <label>Optional comment</label>
-    <textarea id="vote-comment" rows="2" placeholder="Your comment (optional)"></textarea>
+    
 
     <button onclick="submitVote()">Submit Vote</button>
 
@@ -132,7 +127,6 @@
     async function createPoll() {
       const titleEl = document.getElementById("create-title");
       const optionsEl = document.getElementById("create-options");
-      const allowCommentsEl = document.getElementById("create-allow-comments");
       const msgEl = document.getElementById("create-message");
 
       msgEl.textContent = "";
@@ -140,7 +134,7 @@
 
       const title = titleEl.value.trim();
       const optionsRaw = optionsEl.value.trim();
-      const allowComments = allowCommentsEl.checked;
+      
 
       if (!title || !optionsRaw) {
         msgEl.textContent = "Please provide a title and at least one option.";
@@ -162,8 +156,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             title,
-            options,
-            allowComments
+            options
+          
           })
         });
 
@@ -245,7 +239,6 @@
     // ========== SUBMIT VOTE ==========
     async function submitVote() {
       const pollIdEl = document.getElementById("vote-poll-id");
-      const commentEl = document.getElementById("vote-comment");
       const msgEl = document.getElementById("vote-message");
 
       msgEl.textContent = "";
@@ -266,7 +259,7 @@
       }
 
       const optionId = parseInt(selected.value, 10);
-      const comment = commentEl.value.trim() || null;
+  
 
       try {
         const res = await fetch(`${BASE_URL}/polls/${pollId}/vote`, {
@@ -275,7 +268,7 @@
           body: JSON.stringify({
             pollId: parseInt(pollId, 10),
             optionId,
-            comment
+            
           })
         });
 
