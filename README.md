@@ -53,7 +53,7 @@ Each operation is implemented as a **separate Lambda function** to ensure modula
 - Routes frontend requests to the appropriate Lambda functions
 - Acts as the communication layer between frontend and backend
 
-### Amazon RDS (MySQL)
+**Amazon RDS (MySQL)**
 - Stores poll information, options, and votes
 - Provides structured relational data storage
 - Ensures data persistence and consistency
@@ -125,6 +125,7 @@ All course requirements have been fulfilled, and an additional **SNS-based notif
 - No traditional servers are required
 - The architecture supports **automatic scalability**
 - Operational cost is minimized using serverless components
+
 
 
 
