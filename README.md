@@ -1,15 +1,13 @@
-# Serverless Voting System
+ **Serverless Voting System**
 
 ---
 
-## Course Information
+ **Course Information**
 
 - **Course:** Cloud Computing  
 - **Instructor:** Dr. Ahmed Nasrallah  
 - **Department:** Computer Engineering  
 - **University:** Kuwait University – College of Engineering & Petroleum  
-
----
 
 ## Team Members
 
@@ -19,14 +17,14 @@
 
 ---
 
-## Project Overview
+**Project Overview**
 
 The **Serverless Voting System** is a cloud-based web application that allows users to create polls, vote on available options, and view results in real time.  
 The system is implemented using a **fully serverless architecture** on AWS, leveraging managed cloud services to ensure scalability, reliability, and low operational cost without managing servers.
 
----
 
-## Features
+
+**Features**
 
 - Create a new poll with a title and multiple options  
 - Automatically generated **Poll ID** for voting and result retrieval  
@@ -36,11 +34,9 @@ The system is implemented using a **fully serverless architecture** on AWS, leve
 - Simple frontend built using **HTML and JavaScript**  
 - Fully serverless backend architecture  
 
----
+**AWS Services Used:**
 
-## AWS Services Used
-
-### Amazon S3
+**Amazon S3**
 - Hosts the frontend as a **static website**
 - Stores HTML and JavaScript files
 - Provides public access to the web interface via a browser
@@ -138,6 +134,7 @@ All course requirements have been fulfilled, and an additional **SNS-based notif
 - No traditional servers are required
 - The architecture supports **automatic scalability**
 - Operational cost is minimized using serverless components
+
 
 
 
