@@ -18,8 +18,7 @@
 
 **Project Overview**
 
-The **Serverless Voting System** is a cloud-based web application that allows users to create polls, vote on available options, and view results in real time.  
-The system is implemented using a **fully serverless architecture** on AWS, leveraging managed cloud services to ensure scalability, reliability, and low operational cost without managing servers.
+The **Serverless Voting System** is a cloud-based web application that allows users to create polls, vote on available options, and view results in real time.The system is implemented using a **fully serverless architecture** on AWS, leveraging managed cloud services to ensure scalability, reliability, and low operational cost without managing servers.
 
 
 
@@ -126,6 +125,7 @@ All course requirements have been fulfilled, and an additional **SNS-based notif
 - No traditional servers are required
 - The architecture supports **automatic scalability**
 - Operational cost is minimized using serverless components
+
 
 
 
