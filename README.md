@@ -1,6 +1,5 @@
  # Serverless Voting System
 
----
 
  **Course Information**
 
@@ -127,6 +126,7 @@ All course requirements have been fulfilled, and an additional **SNS-based notif
 - No traditional servers are required
 - The architecture supports **automatic scalability**
 - Operational cost is minimized using serverless components
+
 
 
 
